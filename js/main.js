@@ -75,8 +75,9 @@ function onMyPosition() {
 }
 
 function onCopyLocation() {
-  var strUrl = "https://tomerberman.github.io/Travel-Tip/index.html";
-  strUrl += '?' + document.querySelector(".coord").innerText;
+  var strUrl = "https://tomerberman.github.io/Travel-Tip/index.html?lat=";
+  strUrl += gCurrPos.lat.toFixed(4) + '&lng=' + gCurrPos.lng.toFixed(4);
+  //document.querySelector(".coord").innerText;
   var textarea = document.createElement("textarea");
   textarea.style.position = "fixed";
   document.body.appendChild(textarea);
