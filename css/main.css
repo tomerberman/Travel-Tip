@@ -1,0 +1,29 @@
+.address , .coord {
+    z-index: 50;
+    position: absolute;
+    transform: translate(10px,55px);
+    padding: 2px 10px 0 5px;
+    display: block;
+    background-color: rgba(30,0,0,0.62);
+    color: rgb(231, 215, 252);
+    min-height: 17px;
+    font-size: 1.15em;
+    border-radius: 3px;
+}
+
+.coord {
+    transform: translate(10px, 90px);
+}
+
+button {
+    line-height: 2em;
+    width: 10em;
+}
+
+.input-container input {
+    min-width: 15em;
+}
+
+.flex {
+    display: flex;
+}
