@@ -1,7 +1,8 @@
 "use strict";
 
 var gStartTime = Date.now();
-var gInterval;
+var gInterval = null;
+var gCurrPos;
 
 console.log("Main!");
 import locService from "./services/loc.service.js";
@@ -14,10 +15,13 @@ document.querySelector(".btn2").addEventListener("click", ev => {
   onAddressLookup();
 });
 document.querySelector(".btn3").addEventListener("click", ev => {
-  onWeather();
+  onAnimateMap();
 });
 document.querySelector(".copy-location").addEventListener("click", ev => {
   onCopyLocation();
+});
+document.querySelector(".weather-data").addEventListener("click", ev => {
+  onWeatherModal();
 });
 
 
@@ -26,7 +30,6 @@ window.onload = () => {
   mapService
     .initMap()
     .then(function(res){
-      // setTimeout(() => {
         centerToUrl();
       })
     .catch(console.warn);
@@ -49,10 +52,6 @@ function centerToUrl() {
     moveToCenter(+urlParams.lat, +urlParams.lng);
 }
 
-function onWeather() {
-  weatherService.getWeather();
-}
-
 function onMyPosition() {
   locService
     .getPosition()
@@ -62,6 +61,7 @@ function onMyPosition() {
         lat: pos.coords.latitude,
         lng: pos.coords.longitude
       };
+      gCurrPos = posObj;
       moveToCenter(posObj.lat, posObj.lng);
       mapService.addMarker(posObj);
       mapService.drawAccuracyCircle(posObj, pos.coords.accuracy);
@@ -117,14 +117,25 @@ function moveToCenter(lat, lng) {
     lat: lat,
     lng: lng
   };
+  gCurrPos = posObj;
   mapService.addMarker(posObj);
   var elMap = mapService.getElMap();
   elMap.panTo({ lat: lat, lng: lng });
-  document.querySelector(".coord").innerText = `${lat.toFixed(4)} ,
-   ${lng.toFixed(4)}`;
+  document.querySelector(".coord").innerText = `Lat  : ${lat.toFixed(4)} 
+   Long: ${lng.toFixed(4)}`;
 
   var weather = weatherService.getWeather(lat, lng);
   weather.then(function(data) {
+    var str = '';
+    str += "<li>Current Conditions : " + data.weather[0].description + '</li>';
+    str += "<li>Temp [C] : " + data.main.temp.toFixed(1) + '</li>';
+    str += "<li>Humidity [%] : " + data.main.humidity + '</li>';
+    str += "<li>Wind [Km/h] : " + (data.wind.speed * 3.6).toFixed() + '</li>';
+    str += "<li>Wind [Azimut] : " + data.wind.deg.toFixed(0) + '</li>';
+    document.querySelector('.weather-data ul').innerHTML = str;
+    document.querySelector('.weather-data').classList.add('show');
+    document.querySelector('.weather-data').classList.remove('hide');
+
     console.log("********* MAIN got weather:", data);
     console.log("Weather Now:", data.weather[0].description);
     console.log("Temp [C] =", data.main.temp.toFixed(1));
@@ -132,15 +143,30 @@ function moveToCenter(lat, lng) {
     console.log("Wind Speed [Km/h] =", (data.wind.speed * 3.6).toFixed());
     console.log("Wind Direction [Azimut] =", data.wind.deg.toFixed(0));
   });
-  // driveMap(lat, lng);
 }
 
-function driveMap(lat, lng) {
-  clearInterval(gInterval);
+function onWeatherModal(){
+  document.querySelector('.weather-data').classList.add('hide');
+  document.querySelector('.weather-data').classList.remove('show');
+}
+
+function onAnimateMap(){
+  animateMap(gCurrPos.lat, gCurrPos.lng);
+}
+
+function animateMap(lat, lng) {
+  var elMap = mapService.getElMap();
+
+  if (gInterval) {
+    clearInterval(gInterval);
+    gInterval = null;
+    elMap.setMapTypeId('roadmap');
+    return;
+  }
+  elMap.setMapTypeId('satellite');
   gStartTime = Date.now();
   gInterval = setInterval(function() {
     var delta = (Date.now() - gStartTime) / 500000;
-    var elMap = mapService.getElMap();
     elMap.panTo({ lat: lat + delta, lng: lng + delta / 3 });
   }, 40);
 }
