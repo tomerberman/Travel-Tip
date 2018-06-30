@@ -16,14 +16,38 @@ document.querySelector(".btn2").addEventListener("click", ev => {
 document.querySelector(".btn3").addEventListener("click", ev => {
   onWeather();
 });
+document.querySelector(".copy-location").addEventListener("click", ev => {
+  onCopyLocation();
+});
+
 
 window.onload = () => {
   console.log("Window.onload");
   mapService
     .initMap()
-    .then(() => {})
+    .then(function(res){
+      // setTimeout(() => {
+        centerToUrl();
+      })
     .catch(console.warn);
 };
+
+
+function centerToUrl() {
+  var urlParams;
+  var match,
+    pl = /\+/g, // Regex for replacing addition symbol with a space
+    search = /([^&=]+)=?([^&]*)/g,
+    decode = function(s) {
+      return decodeURIComponent(s.replace(pl, " "));
+    },
+    query = window.location.search.substring(1);
+  urlParams = {};
+  while ((match = search.exec(query)))
+    urlParams[decode(match[1])] = decode(match[2]);
+  if (urlParams.lat && urlParams.lng)
+    moveToCenter(+urlParams.lat, +urlParams.lng);
+}
 
 function onWeather() {
   weatherService.getWeather();
@@ -50,19 +74,41 @@ function onMyPosition() {
     });
 }
 
+function onCopyLocation() {
+  var strUrl = "https://tomerberman.github.io/Travel-Tip/index.html";
+  strUrl += '?' + document.querySelector(".coord").innerText;
+  var textarea = document.createElement("textarea");
+  textarea.style.position = "fixed";
+  document.body.appendChild(textarea);
+  textarea.textContent = strUrl;
+  textarea.select();
+  try {
+    return document.execCommand("cut");
+  } catch (ex) {
+    console.warn("Copy to clipboard failed.", ex);
+    return false;
+  } finally {
+    document.body.removeChild(textarea);
+  }
+
+  // var pasteText = document.querySelector("#output");
+  // pasteText.focus();
+  // document.execCommand("paste");
+  // console.log(pasteText.textContent);
+}
+
 function onAddressLookup(ev) {
   var searchQuery = document.querySelector(".input-container input").value;
+
   var coord = locService.getLocs(searchQuery);
   coord.then(res => {
     var posObj = res.geometry.location;
-    var name1 = res.address_components[0].long_name;
-    var name2 = res.address_components[1].long_name;
-    var name3 = res.address_components[2].long_name;
-    var name4 = res.address_components[3].long_name;
+    var strHtml = "";
+    for (let i = 0; i < res.address_components.length; i++) {
+      strHtml += res.address_components[i].long_name + " , ";
+    }
     moveToCenter(posObj.lat, posObj.lng);
-    document.querySelector(
-      ".address"
-    ).innerText = `${name1} , ${name2} , ${name3} , ${name4}`;
+    document.querySelector(".address").innerText = strHtml;
   });
 }
 
@@ -77,16 +123,15 @@ function moveToCenter(lat, lng) {
   document.querySelector(".coord").innerText = `${lat.toFixed(4)} ,
    ${lng.toFixed(4)}`;
 
-   var weather = weatherService.getWeather(lat,lng)
-   weather.then(function(data){
-       console.log('********* MAIN got weather:',data);
-       console.log("Weather Now:", data.weather[0].description);
-       console.log("Temp [C] =", (data.main.temp).toFixed(1));
-       console.log("Humidity [%] =", data.main.humidity);
-       console.log("Wind Speed [Km/h] =", (data.wind.speed * 3.6).toFixed());
-       console.log("Wind Direction [Azimut] =", (data.wind.deg).toFixed(0));
-   })
-
+  var weather = weatherService.getWeather(lat, lng);
+  weather.then(function(data) {
+    console.log("********* MAIN got weather:", data);
+    console.log("Weather Now:", data.weather[0].description);
+    console.log("Temp [C] =", data.main.temp.toFixed(1));
+    console.log("Humidity [%] =", data.main.humidity);
+    console.log("Wind Speed [Km/h] =", (data.wind.speed * 3.6).toFixed());
+    console.log("Wind Direction [Azimut] =", data.wind.deg.toFixed(0));
+  });
   // driveMap(lat, lng);
 }
 
