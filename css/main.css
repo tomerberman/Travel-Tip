@@ -1,6 +1,6 @@
 * {
-    box-sizing: border-box;
-    font-family: arial, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  box-sizing: border-box;
+  font-family: arial, Haettenschweiler, "Arial Narrow Bold", sans-serif;
 }
 
 .address,
@@ -22,19 +22,22 @@
 }
 
 ul {
-    list-style: none;
-    padding: 0;
-    margin: 5px 0 0 0;
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0 0;
 }
 
 button {
-    font-size: 0.56em;
+  margin: 2px;
+  font-size: 0.66em;
   line-height: 2em;
-  width: 10em;
+  width: 31%;
+  padding: 2px;
 }
 
 .input-container input {
-  min-width: 15em;
+  min-width: 30%;
+  padding: 2px;
 }
 
 /* ******** Helpers ******** */
@@ -43,32 +46,32 @@ button {
 }
 
 .show {
-    display: block;
+  display: block;
 }
 
 .hide {
-    display: none;
+  display: none;
 }
 /* ************************* */
 
 #map {
-    margin-bottom: 8px;
-    max-height: 80% !important;
+  margin-bottom: 8px;
+  max-height: 80% !important;
 }
 
 .weather-data {
-    position: fixed;
-    z-index: 100;
-    width: 60%;
-    transform: translate(30%,200%);
-    transition: 0.4s;
-    background-color: rgba(0,0,0,0.75);
-    color: lightskyblue;
-    border-radius: 10px;
-    padding: 5px 10px 5px 10px;
-    margin: 0 auto;
-    font-size: 1.4em;
-    cursor: pointer;
+  position: fixed;
+  z-index: 100;
+  width: 60%;
+  transform: translate(30%, 200%);
+  transition: 0.4s;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: lightskyblue;
+  border-radius: 10px;
+  padding: 5px 10px 5px 10px;
+  margin: 0 auto;
+  font-size: 1.4em;
+  cursor: pointer;
 }
 
 @media (max-width: 500px) {
@@ -77,22 +80,21 @@ button {
   }
 
   h2 {
-      margin: 8px;
-      font-size: 0.75em;
+    margin: 8px;
+    font-size: 0.75em;
   }
 
-  .address , .coord {
-      font-size: 0.75em;
+  .address,
+  .coord {
+    font-size: 0.75em;
   }
 
   ul {
-      font-size: 0.7em;
+    font-size: 0.7em;
   }
 
-.weather-data {
+  .weather-data {
     font-size: 0.92em;
-    transform: translate(30%,300%);
-
-}
-
+    transform: translate(30%, 300%);
+  }
 }
